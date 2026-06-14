@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Sales Analytics Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-logo">
+            <i class="fas fa-chart-line"></i>
+            Vehicle Sales Dashboard
+        </div>
+
+        <div class="nav-links">
+            <a href="/">Dashboard</a>
+            <a href="/sales">Sales</a>
+            <a href="/brands">Brands</a>
+            <a href="/segments">Segments</a>
+            <a href="/insights">Insights</a>
+        </div>
+    </nav>
+
+    <div class="dashboard">
+
+        <!-- HERO SECTION -->
+
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1>Vehicle Sales Analytics Dashboard</h1>
+
+                <p>
+                    Interactive analysis of vehicle sales trends,
+                    brand performance, market segments and body type
+                    distribution using Data Science and Visualization.
+                </p>
+
+                <div class="hero-badges">
+                    <span>2024 Dataset</span>
+                    <span>Interactive Dashboard</span>
+                    <span>Data Science Project</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPI SECTION -->
+
+        <section class="kpi-section">
+
+            <div class="kpi-card">
+                <h3>
+                    <i class="fas fa-car"></i>
+                    Total Sales
+                </h3>
+
+                <p id="totalSales">Loading...</p>
+            </div>
+
+            <div class="kpi-card">
+                <h3>
+                    <i class="fas fa-industry"></i>
+                    Total Brands
+                </h3>
+
+                <p id="totalBrands">Loading...</p>
+            </div>
+
+            <div class="kpi-card">
+                <h3>
+                    <i class="fas fa-layer-group"></i>
+                    Total Segments
+                </h3>
+
+                <p id="totalSegments">Loading...</p>
+            </div>
+
+            <div class="kpi-card">
+                <h3>
+                    <i class="fas fa-truck"></i>
+                    Body Types
+                </h3>
+
+                <p id="totalBodyTypes">Loading...</p>
+            </div>
+
+        </section>
+
+        <!-- MAIN CHARTS -->
+
+        <section class="charts-grid">
+
+            <div class="chart-card">
+                <h2>
+                    <i class="fas fa-trophy"></i>
+                    Top 10 Brands by Sales
+                </h2>
+
+                <canvas id="makeChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h2>
+                    <i class="fas fa-chart-line"></i>
+                    Monthly Sales Trend
+                </h2>
+
+                <canvas id="trendChart"></canvas>
+            </div>
+
+        </section>
+
+        <!-- PROJECT INFO -->
+
+        <section class="project-overview">
+
+            <div class="overview-card">
+                <h2>Project Overview</h2>
+
+                <p>
+                    This dashboard analyzes vehicle sales data using
+                    Python, Pandas, Flask and Chart.js. It helps
+                    identify market trends, top-performing brands,
+                    segment-wise distribution and monthly sales patterns.
+                </p>
+            </div>
+
+        </section>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

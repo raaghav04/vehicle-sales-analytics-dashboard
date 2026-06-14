@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Analysis | Vehicle Sales Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <nav class="navbar">
+
+        <div class="nav-logo">
+            <i class="fas fa-chart-line"></i>
+            Vehicle Sales Dashboard
+        </div>
+
+        <div class="nav-links">
+            <a href="/">Dashboard</a>
+            <a href="/sales">Sales</a>
+            <a href="/brands">Brands</a>
+            <a href="/segments">Segments</a>
+            <a href="/insights">Insights</a>
+        </div>
+
+    </nav>
+
+    <div class="dashboard">
+
+        <!-- PAGE HERO -->
+
+        <section class="hero-section">
+
+            <div class="hero-content">
+
+                <h1>
+                    <i class="fas fa-chart-line"></i>
+                    Sales Analysis
+                </h1>
+
+                <p>
+                    Explore monthly vehicle sales trends, identify
+                    sales peaks and understand overall market
+                    performance throughout the year.
+                </p>
+
+                <div class="hero-badges">
+                    <span>Monthly Trends</span>
+                    <span>Sales Performance</span>
+                    <span>Market Analysis</span>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- QUICK INSIGHTS -->
+
+        <section class="kpi-section">
+
+            <div class="kpi-card">
+                <h3>
+                    <i class="fas fa-calendar-alt"></i>
+                    Monthly Tracking
+                </h3>
+
+                <p>12</p>
+            </div>
+
+            <div class="kpi-card">
+                <h3>
+                    <i class="fas fa-chart-area"></i>
+                    Trend Analysis
+                </h3>
+
+                <p>Live</p>
+            </div>
+
+            <div class="kpi-card">
+                <h3>
+                    <i class="fas fa-car-side"></i>
+                    Vehicle Market
+                </h3>
+
+                <p>2024</p>
+            </div>
+
+            <div class="kpi-card">
+                <h3>
+                    <i class="fas fa-bolt"></i>
+                    Insights
+                </h3>
+
+                <p>Dynamic</p>
+            </div>
+
+        </section>
+
+        <!-- CHARTS -->
+
+        <section class="charts-grid single-page-grid">
+
+            <div class="chart-card wide-card">
+
+                <h2>
+                    <i class="fas fa-chart-line"></i>
+                    Monthly Sales Trend
+                </h2>
+
+                <canvas id="trendChart"></canvas>
+
+            </div>
+
+            <div class="chart-card">
+
+                <h2>
+                    <i class="fas fa-trophy"></i>
+                    Top 10 Brands by Sales
+                </h2>
+
+                <canvas id="makeChart"></canvas>
+
+            </div>
+
+        </section>
+
+        <!-- ANALYSIS SECTION -->
+
+        <section class="project-overview">
+
+            <div class="overview-card">
+
+                <h2>
+                    <i class="fas fa-lightbulb"></i>
+                    Sales Insights
+                </h2>
+
+                <p>
+                    The sales analysis page focuses on identifying
+                    monthly sales patterns and understanding market
+                    demand throughout the year. Trend analysis helps
+                    reveal seasonal fluctuations, while brand sales
+                    comparisons highlight the strongest performers
+                    in the automotive market.
+                </p>
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insights | Vehicle Sales Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-logo">Vehicle Sales Dashboard</div>
+        <div class="nav-links">
+            <a href="/">Dashboard</a>
+            <a href="/sales">Sales</a>
+            <a href="/brands">Brands</a>
+            <a href="/segments">Segments</a>
+            <a href="/insights">Insights</a>
+        </div>
+    </nav>
+
+    <div class="dashboard">
+
+        <header class="header">
+            <h1>Key Insights</h1>
+            <p>Data-driven highlights from 2024 vehicle sales performance</p>
+        </header>
+
+        <section class="insights-section" id="insightsContainer">
+            <div class="insight-card">
+                <h2>🏆 Market Leader</h2>
+                <p id="insightBrand">Loading...</p>
+            </div>
+
+            <div class="insight-card">
+                <h2>🚗 Best-Selling Model</h2>
+                <p id="insightModel">Loading...</p>
+            </div>
+
+            <div class="insight-card">
+                <h2>📅 Peak Sales Month</h2>
+                <p id="insightMonth">Loading...</p>
+            </div>
+
+            <div class="insight-card">
+                <h2>🚙 Top Body Type</h2>
+                <p id="insightBody">Loading...</p>
+            </div>
+
+            <div class="insight-card">
+                <h2>📈 Avg. Month-over-Month Growth</h2>
+                <p id="insightMom">Loading...</p>
+            </div>
+
+            <div class="insight-card">
+                <h2>📊 Total Market Sales</h2>
+                <p id="insightTotal">Loading...</p>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        async function loadInsights() {
+            const res = await fetch("/insights_data");
+            const d = await res.json();
+
+            document.getElementById("insightBrand").innerText =
+                `${d.top_brand} leads the market with ${d.top_brand_sales.toLocaleString()} units sold, capturing ${d.top_brand_share}% of total sales.`;
+
+            document.getElementById("insightModel").innerText =
+                `The ${d.top_model} was the highest-selling model with ${d.top_model_sales.toLocaleString()} total units in 2024.`;
+
+            document.getElementById("insightMonth").innerText =
+                `${d.best_month} recorded the highest monthly sales at ${d.best_month_sales.toLocaleString()} units.`;
+
+            document.getElementById("insightBody").innerText =
+                `${d.top_body_type} vehicles dominated the market with ${d.top_body_type_sales.toLocaleString()} units sold across all brands.`;
+
+            document.getElementById("insightMom").innerText =
+                `The average month-over-month growth across all models in 2024 was ${d.avg_mom_growth > 0 ? "+" : ""}${d.avg_mom_growth}%.`;
+
+            document.getElementById("insightTotal").innerText =
+                `A total of ${d.total_sales.toLocaleString()} vehicles were sold across all brands, models, and segments in 2024.`;
+        }
+
+        window.addEventListener("load", loadInsights);
+    </script>
+</body>
+</html>
