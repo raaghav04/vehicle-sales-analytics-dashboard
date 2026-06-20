@@ -209,31 +209,31 @@ This project demonstrates practical implementation of:
 
 Displays key performance indicators, overall sales metrics, and summary analytics.
 
-<img width="1366" height="768" alt="Screenshot (328)" src="https://github.com/user-attachments/assets/b6db5c4b-e242-41f8-a67a-ad0e20444bb8" />
+![Dashboard Overview](Screenshots/Dashboard-Overview.png)
 
 ### Sales Dashboard
 
 Provides sales-related visualizations and trend analysis.
 
-<img width="1366" height="768" alt="Screenshot (331)" src="https://github.com/user-attachments/assets/640f49d4-fccc-4729-b139-2b43df01638a" />
+![Sales Dashboard](Screenshots/Sales-Dashboard.png)
 
 ### Brand Analysis
 
 Displays sales performance across different vehicle brands.
 
-<img width="1366" height="768" alt="Screenshot (329)" src="https://github.com/user-attachments/assets/4c5b27a3-7348-42c4-b9be-d18521e4f8e8" />
+![Brand Analysis](Screenshots/Brand-Analysis.png)
 
 ### Segment Analysis
 
 Visualizes vehicle sales distribution across market segments.
 
-<img width="1366" height="768" alt="Screenshot (330)" src="https://github.com/user-attachments/assets/ebfdceab-2a90-4c9e-b515-e2e4fd250366" />
+![Segment Analysis](Screenshots/Segment-Analysis.png)
 
 ### Insights Dashboard
 
 Provides analytical insights and business intelligence derived from the dataset.
 
-<img width="1366" height="768" alt="Screenshot (333)" src="https://github.com/user-attachments/assets/94d4bca0-0c2b-4245-b0b8-0d5333031c0f" />
+![Insights Dashboard](Screenshots/Insights-Dashboard.png)
 
 ---
 
