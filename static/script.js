@@ -67,7 +67,7 @@ function getChartAnimation(chartName) {
         };
     }
 
-    if (chartName === "segment") {
+if (chartName === "segment") {
     return {
         duration: 800,
         easing: "easeOutCubic"
@@ -413,25 +413,49 @@ async function renderTrendChart() {
 }
 
 
+let dashboardLoading = false;
+
 async function initDashboard() {
     const dashboardEl = document.querySelector(".dashboard");
     if (!dashboardEl) return;
 
+    if (dashboardLoading) return;
+    dashboardLoading = true;
+
     try {
         await loadKPI();
 
-        await renderMakeChart();
-await renderSegmentChart();
-await renderBodyChart();
-await renderTrendChart();
-        
+        await Promise.all([
+            renderMakeChart(),
+            renderSegmentChart(),
+            renderBodyChart(),
+            renderTrendChart()
+        ]);
+
+        console.log("Dashboard fully loaded");
+
     } catch (error) {
         console.error("Dashboard load error:", error);
+
+    } finally {
+        dashboardLoading = false;
     }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+function startDashboard() {
     requestAnimationFrame(() => {
         initDashboard();
     });
+}
+
+window.addEventListener("DOMContentLoaded", startDashboard);
+
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+        dashboardLoading = false;
+
+        setTimeout(() => {
+            startDashboard();
+        }, 50);
+    }
 });
