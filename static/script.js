@@ -1,186 +1,155 @@
 // ============================================
-// VEHICLE SALES DASHBOARD
+// VEHICLE SALES DASHBOARD - script.js
 // ============================================
 
 Chart.defaults.color = "#ffffff";
+Chart.defaults.font.family = "'Poppins', sans-serif";
 
-Chart.defaults.font.family =
-    "'Poppins', sans-serif";
-
-
-// ============================================
-// CHART INSTANCES
-// ============================================
-
-let makeChartInstance = null;
-
-let segmentChartInstance = null;
-
-let trendChartInstance = null;
-
-let bodyChartInstance = null;
+let charts = {};
 
 
 // ============================================
-// COLORS
-// ============================================
-
-const brandColors = [
-
-    "#3B82F6",
-    "#10B981",
-    "#F59E0B",
-    "#EF4444",
-    "#8B5CF6",
-    "#06B6D4",
-    "#EC4899",
-    "#84CC16",
-    "#F97316",
-    "#a78245"
-
-];
-
-
-const segmentColors = [
-
-    "#3B82F6",
-    "#10B981",
-    "#F59E0B",
-    "#EF4444",
-    "#8B5CF6",
-    "#06B6D4",
-    "#EC4899",
-    "#84CC16"
-
-];
-
-
-const bodyColors = [
-
-    "#a78245",
-    "#3B82F6",
-    "#10B981",
-    "#EF4444",
-    "#8B5CF6",
-    "#F59E0B",
-    "#06B6D4",
-    "#EC4899"
-
-];
-
-
-// ============================================
-// FETCH
+// FETCH DATA
 // ============================================
 
 async function fetchData(url) {
-
-    console.log("Fetching:", url);
 
     const response = await fetch(url, {
         cache: "no-store"
     });
 
     if (!response.ok) {
-
         throw new Error(
             `Failed to load ${url}: ${response.status}`
         );
-
     }
 
-    const data = await response.json();
-
-    console.log("Received:", data);
-
-    return data;
+    return await response.json();
 }
 
 
 // ============================================
-// TOOLTIP
+// DESTROY EXISTING CHART
 // ============================================
 
-function commonTooltip() {
+function destroyChart(name) {
+
+    if (charts[name]) {
+        charts[name].destroy();
+        charts[name] = null;
+    }
+}
+
+
+// ============================================
+// BAR CHART TOOLTIP
+// ============================================
+
+function barTooltip() {
 
     return {
-
         enabled: true,
 
         backgroundColor: "#021130",
-
-        titleColor: "#ffffff",
-
+        titleColor: "#f0d7a5",
         bodyColor: "#ffffff",
 
         borderColor: "#a78245",
-
         borderWidth: 2,
 
-        padding: 14,
-
+        padding: 12,
         cornerRadius: 10,
 
-        displayColors: true,
+        displayColors: false,
 
         callbacks: {
 
             title: function(context) {
-
                 return context[0].label;
-
             },
+
+            label: function(context) {
+
+                const value =
+                    Number(context.parsed.y || 0);
+
+                return `Sales: ${value.toLocaleString()} units`;
+            }
+        }
+    };
+}
+
+
+// ============================================
+// PIE CHART TOOLTIP
+// ============================================
+
+function pieTooltip() {
+
+    return {
+        enabled: true,
+
+        backgroundColor: "#021130",
+        titleColor: "#f0d7a5",
+        bodyColor: "#ffffff",
+
+        borderColor: "#a78245",
+        borderWidth: 2,
+
+        padding: 12,
+        cornerRadius: 10,
+
+        callbacks: {
 
             label: function(context) {
 
                 const value =
                     Number(context.raw || 0);
 
-                let text =
-                    ` Sales: ${value.toLocaleString()}`;
-
-
-                // Percentage for pie/doughnut
-
-                if (
-                    context.chart.config.type === "pie" ||
-                    context.chart.config.type === "doughnut"
-                ) {
-
-                    const values =
-                        context.chart.data.datasets[0].data;
-
-                    const total =
-                        values.reduce(
-                            (sum, value) =>
-                                sum + Number(value || 0),
-                            0
-                        );
-
-                    const percentage =
-                        total > 0
-                            ? ((value / total) * 100).toFixed(1)
-                            : "0.0";
-
-                    text +=
-                        ` | Share: ${percentage}%`;
-
-                }
-
-
-                return text;
-
+                return ` ${context.label}: ${value.toLocaleString()} units`;
             }
-
         }
-
     };
-
 }
 
 
 // ============================================
-// BRAND BAR CHART
+// LINE CHART TOOLTIP
+// ============================================
+
+function lineTooltip() {
+
+    return {
+        enabled: true,
+
+        backgroundColor: "#021130",
+        titleColor: "#f0d7a5",
+        bodyColor: "#ffffff",
+
+        borderColor: "#a78245",
+        borderWidth: 2,
+
+        padding: 12,
+        cornerRadius: 10,
+
+        displayColors: false,
+
+        callbacks: {
+
+            label: function(context) {
+
+                const value =
+                    Number(context.parsed.y || 0);
+
+                return `Sales: ${value.toLocaleString()} units`;
+            }
+        }
+    };
+}
+
+
+// ============================================
+// TOP 10 BRANDS
 // ============================================
 
 async function renderMakeChart() {
@@ -188,187 +157,171 @@ async function renderMakeChart() {
     const canvas =
         document.getElementById("makeChart");
 
-
     if (!canvas) {
-
-        console.log(
-            "makeChart not found."
-        );
-
         return;
-
     }
 
+    destroyChart("makeChart");
 
     const data =
         await fetchData("/sales_by_make");
 
-
-    if (makeChartInstance) {
-
-        makeChartInstance.destroy();
-
-    }
+    console.log("Brand data:", data);
 
 
-    makeChartInstance =
-        new Chart(canvas, {
+    charts.makeChart = new Chart(canvas, {
 
-            type: "bar",
+        type: "bar",
 
-            data: {
+        data: {
 
-                labels:
-                    data.labels,
+            labels: data.labels,
 
-                datasets: [
+            datasets: [{
 
-                    {
+                label: "Sales",
 
-                        label:
-                            "Top 10 Brands by Sales",
+                data: data.values,
 
-                        data:
-                            data.values,
+                backgroundColor: [
+                    "#3B82F6",
+                    "#10B981",
+                    "#F59E0B",
+                    "#EF4444",
+                    "#8B5CF6",
+                    "#06B6D4",
+                    "#EC4899",
+                    "#84CC16",
+                    "#F97316",
+                    "#a78245"
+                ],
 
-                        backgroundColor:
-                            brandColors,
+                borderColor: "#ffffff",
 
-                        borderColor:
-                            "#ffffff",
+                borderWidth: 1,
 
-                        borderWidth:
-                            1.5,
+                borderRadius: 8,
 
-                        borderRadius:
-                            10,
+                borderSkipped: false,
 
-                        hoverBackgroundColor:
-                            "#f0d7a5"
+                hoverBackgroundColor: "#f0d7a5",
 
-                    }
+                hoverBorderColor: "#ffffff",
 
-                ]
+                hoverBorderWidth: 2
+            }]
+        },
 
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+
+            // IMPORTANT:
+            // Bars grow from zero when chart first appears.
+
+            animation: {
+
+                duration: 1800,
+
+                easing: "easeOutQuart",
+
+                delay: function(context) {
+
+                    return context.dataIndex * 100;
+                }
             },
 
 
-            options: {
+            interaction: {
 
-                responsive: true,
+                mode: "nearest",
 
-                maintainAspectRatio: false,
+                axis: "x",
+
+                intersect: true
+            },
 
 
-                // ONLY chart animation
+            plugins: {
 
-                animation: {
+                legend: {
 
-                    duration: 1400,
-
-                    easing: "easeOutQuart"
-
+                    display: false
                 },
 
 
-                interaction: {
-
-                    mode: "nearest",
-
-                    intersect: true
-
-                },
+                tooltip:
+                    barTooltip()
+            },
 
 
-                plugins: {
+            scales: {
 
-                    legend: {
+                x: {
 
-                        display: true,
+                    ticks: {
 
-                        labels: {
+                        color: "#ffffff",
 
-                            color: "#ffffff",
-
-                            usePointStyle: true
-
-                        }
-
-                    },
-
-                    tooltip:
-                        commonTooltip()
-
-                },
-
-
-                scales: {
-
-                    x: {
-
-                        ticks: {
-
-                            color: "#ffffff",
-
-                            font: {
-
-                                size: 12
-
-                            }
-
+                        font: {
+                            size: 12,
+                            weight: "500"
                         },
 
-                        grid: {
+                        autoSkip: false,
 
-                            color:
-                                "rgba(255,255,255,0.08)"
+                        maxRotation: 45,
 
-                        }
-
+                        minRotation: 0
                     },
 
+                    grid: {
 
-                    y: {
-
-                        beginAtZero: true,
-
-                        ticks: {
-
-                            color: "#ffffff",
-
-                            font: {
-
-                                size: 12
-
-                            }
-
-                        },
-
-                        grid: {
-
-                            color:
-                                "rgba(255,255,255,0.08)"
-
-                        }
-
+                        color:
+                            "rgba(255,255,255,0.06)"
                     }
+                },
 
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+
+                        color: "#ffffff",
+
+                        font: {
+                            size: 12
+                        },
+
+                        callback: function(value) {
+
+                            return Number(value)
+                                .toLocaleString();
+                        }
+                    },
+
+                    grid: {
+
+                        color:
+                            "rgba(255,255,255,0.08)"
+                    }
                 }
-
             }
+        }
+    });
 
-        });
-
-
-    console.log(
-        "Brand chart loaded."
-    );
-
+    console.log("Brand chart loaded.");
 }
 
 
 // ============================================
-// MARKET SHARE PIE CHART
+// SEGMENT PIE CHART
 // ============================================
 
 async function renderSegmentChart() {
@@ -376,138 +329,100 @@ async function renderSegmentChart() {
     const canvas =
         document.getElementById("segmentChart");
 
-
     if (!canvas) {
-
-        console.log(
-            "segmentChart not found."
-        );
-
         return;
-
     }
 
+    destroyChart("segmentChart");
 
     const data =
         await fetchData("/sales_by_segment");
 
-
-    if (segmentChartInstance) {
-
-        segmentChartInstance.destroy();
-
-    }
+    console.log("Segment data:", data);
 
 
-    segmentChartInstance =
-        new Chart(canvas, {
+    charts.segmentChart = new Chart(canvas, {
 
-            type: "pie",
+        type: "pie",
 
-            data: {
+        data: {
 
-                labels:
-                    data.labels,
+            labels: data.labels,
 
-                datasets: [
+            datasets: [{
 
-                    {
+                data: data.values,
 
-                        data:
-                            data.values,
+                backgroundColor: [
+                    "#3B82F6",
+                    "#10B981",
+                    "#F59E0B",
+                    "#EF4444",
+                    "#8B5CF6",
+                    "#06B6D4",
+                    "#EC4899",
+                    "#84CC16",
+                    "#F97316",
+                    "#a78245"
+                ],
 
-                        backgroundColor:
-                            segmentColors,
+                borderColor: "#021130",
 
-                        borderColor:
-                            "#021130",
+                borderWidth: 3,
 
-                        borderWidth:
-                            3,
+                hoverOffset: 18
+            }]
+        },
 
-                        hoverOffset:
-                            18
 
-                    }
+        options: {
 
-                ]
+            responsive: true,
 
+            maintainAspectRatio: false,
+
+
+            animation: {
+
+                duration: 1800,
+
+                easing: "easeOutQuart",
+
+                animateRotate: true,
+
+                animateScale: true
             },
 
 
-            options: {
+            plugins: {
 
-                responsive: true,
+                legend: {
 
-                maintainAspectRatio: false,
+                    position: "bottom",
 
+                    labels: {
 
-                // ONLY chart animation
+                        color: "#ffffff",
 
-                animation: {
+                        usePointStyle: true,
 
-                    duration: 1000,
-
-                    easing: "easeOutCubic"
-
+                        padding: 15
+                    }
                 },
 
 
-                interaction: {
-
-                    mode: "nearest",
-
-                    intersect: true
-
-                },
-
-
-                plugins: {
-
-                    legend: {
-
-                        position: "bottom",
-
-                        labels: {
-
-                            color: "#ffffff",
-
-                            usePointStyle: true,
-
-                            pointStyle: "circle",
-
-                            padding: 15,
-
-                            font: {
-
-                                size: 12
-
-                            }
-
-                        }
-
-                    },
-
-
-                    tooltip:
-                        commonTooltip()
-
-                }
-
+                tooltip:
+                    pieTooltip()
             }
+        }
+    });
 
-        });
-
-
-    console.log(
-        "Market share chart loaded."
-    );
-
+    console.log("Segment chart loaded.");
 }
 
 
 // ============================================
-// TREND CHART
+// MONTHLY SALES TREND
 // ============================================
 
 async function renderTrendChart() {
@@ -515,170 +430,128 @@ async function renderTrendChart() {
     const canvas =
         document.getElementById("trendChart");
 
-
     if (!canvas) {
-
         return;
-
     }
 
+    destroyChart("trendChart");
 
     const data =
         await fetchData("/sales_trend");
 
-
-    if (trendChartInstance) {
-
-        trendChartInstance.destroy();
-
-    }
+    console.log("Trend data:", data);
 
 
-    trendChartInstance =
-        new Chart(canvas, {
+    charts.trendChart = new Chart(canvas, {
 
-            type: "line",
+        type: "line",
 
-            data: {
+        data: {
 
-                labels:
-                    data.labels,
+            labels: data.labels,
 
-                datasets: [
+            datasets: [{
 
-                    {
+                label: "Monthly Sales",
 
-                        label:
-                            "Monthly Sales Trend",
+                data: data.values,
 
-                        data:
-                            data.values,
+                borderColor: "#3B82F6",
 
-                        borderColor:
-                            "#3B82F6",
+                backgroundColor:
+                    "rgba(59,130,246,0.15)",
 
-                        borderWidth:
-                            3,
+                borderWidth: 3,
 
-                        backgroundColor:
-                            "rgba(59,130,246,0.18)",
+                fill: true,
 
-                        fill:
-                            true,
+                tension: 0.35,
 
-                        tension:
-                            0.32,
+                pointBackgroundColor:
+                    "#a78245",
 
-                        pointBackgroundColor:
-                            "#60A5FA",
+                pointBorderColor:
+                    "#ffffff",
 
-                        pointBorderColor:
-                            "#ffffff",
+                pointBorderWidth: 2,
 
-                        pointBorderWidth:
-                            2,
+                pointRadius: 5,
 
-                        pointRadius:
-                            5,
+                pointHoverRadius: 9
+            }]
+        },
 
-                        pointHoverRadius:
-                            10,
 
-                        pointHitRadius:
-                            20
+        options: {
 
-                    }
+            responsive: true,
 
-                ]
+            maintainAspectRatio: false,
 
+
+            animation: {
+
+                duration: 1800,
+
+                easing: "easeOutQuart"
             },
 
 
-            options: {
+            plugins: {
 
-                responsive: true,
+                legend: {
 
-                maintainAspectRatio: false,
-
-                animation: {
-
-                    duration: 1500,
-
-                    easing: "easeInOutQuart"
-
+                    display: false
                 },
 
-                interaction: {
+                tooltip:
+                    lineTooltip()
+            },
 
-                    mode: "nearest",
 
-                    intersect: true
+            scales: {
 
-                },
+                x: {
 
-                plugins: {
+                    ticks: {
 
-                    legend: {
-
-                        display: true,
-
-                        labels: {
-
-                            color: "#ffffff"
-
-                        }
-
+                        color: "#ffffff"
                     },
 
-                    tooltip:
-                        commonTooltip()
+                    grid: {
 
-                },
-
-                scales: {
-
-                    x: {
-
-                        ticks: {
-
-                            color: "#ffffff"
-
-                        },
-
-                        grid: {
-
-                            color:
-                                "rgba(255,255,255,0.08)"
-
-                        }
-
-                    },
-
-                    y: {
-
-                        beginAtZero: true,
-
-                        ticks: {
-
-                            color: "#ffffff"
-
-                        },
-
-                        grid: {
-
-                            color:
-                                "rgba(255,255,255,0.08)"
-
-                        }
-
+                        color:
+                            "rgba(255,255,255,0.06)"
                     }
+                },
 
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+
+                        color: "#ffffff",
+
+                        callback: function(value) {
+
+                            return Number(value)
+                                .toLocaleString();
+                        }
+                    },
+
+                    grid: {
+
+                        color:
+                            "rgba(255,255,255,0.08)"
+                    }
                 }
-
             }
+        }
+    });
 
-        });
-
+    console.log("Trend chart loaded.");
 }
 
 
@@ -691,104 +564,125 @@ async function renderBodyChart() {
     const canvas =
         document.getElementById("bodyChart");
 
-
     if (!canvas) {
-
         return;
-
     }
 
+    destroyChart("bodyChart");
 
     const data =
         await fetchData("/sales_by_body");
 
-
-    if (bodyChartInstance) {
-
-        bodyChartInstance.destroy();
-
-    }
+    console.log("Body type data:", data);
 
 
-    bodyChartInstance =
-        new Chart(canvas, {
+    charts.bodyChart = new Chart(canvas, {
 
-            type: "doughnut",
+        type: "bar",
 
-            data: {
+        data: {
 
-                labels:
-                    data.labels,
+            labels: data.labels,
 
-                datasets: [
+            datasets: [{
 
-                    {
+                label: "Sales",
 
-                        data:
-                            data.values,
+                data: data.values,
 
-                        backgroundColor:
-                            bodyColors,
+                backgroundColor: "#a78245",
 
-                        borderColor:
-                            "#021130",
+                borderColor: "#ffffff",
 
-                        borderWidth:
-                            3,
+                borderWidth: 1,
 
-                        hoverOffset:
-                            18
+                borderRadius: 8,
 
-                    }
+                hoverBackgroundColor: "#f0d7a5",
 
-                ]
+                hoverBorderColor: "#ffffff",
 
+                hoverBorderWidth: 2
+            }]
+        },
+
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+
+            animation: {
+
+                duration: 1800,
+
+                easing: "easeOutQuart",
+
+                delay: function(context) {
+
+                    return context.dataIndex * 100;
+                }
             },
 
 
-            options: {
+            plugins: {
 
-                responsive: true,
+                legend: {
 
-                maintainAspectRatio: false,
-
-                cutout: "58%",
-
-                animation: {
-
-                    duration: 1000,
-
-                    easing: "easeOutCubic"
-
+                    display: false
                 },
 
-                plugins: {
+                tooltip:
+                    barTooltip()
+            },
 
-                    legend: {
 
-                        position: "bottom",
+            scales: {
 
-                        labels: {
+                x: {
 
-                            color: "#ffffff",
+                    ticks: {
 
-                            usePointStyle: true,
+                        color: "#ffffff",
 
-                            padding: 15
-
-                        }
-
+                        autoSkip: false
                     },
 
-                    tooltip:
-                        commonTooltip()
+                    grid: {
 
+                        color:
+                            "rgba(255,255,255,0.06)"
+                    }
+                },
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+
+                        color: "#ffffff",
+
+                        callback: function(value) {
+
+                            return Number(value)
+                                .toLocaleString();
+                        }
+                    },
+
+                    grid: {
+
+                        color:
+                            "rgba(255,255,255,0.08)"
+                    }
                 }
-
             }
+        }
+    });
 
-        });
-
+    console.log("Body chart loaded.");
 }
 
 
@@ -801,91 +695,65 @@ async function loadKPI() {
     const totalSales =
         document.getElementById("totalSales");
 
-    const totalBrands =
-        document.getElementById("totalBrands");
-
-    const totalSegments =
-        document.getElementById("totalSegments");
-
-    const totalBodyTypes =
-        document.getElementById("totalBodyTypes");
-
-
-    if (
-        !totalSales ||
-        !totalBrands ||
-        !totalSegments ||
-        !totalBodyTypes
-    ) {
-
+    if (!totalSales) {
         return;
-
     }
-
 
     const data =
         await fetchData("/kpi");
 
-
-    totalSales.innerText =
+    document.getElementById("totalSales").innerText =
         Number(data.total_sales).toLocaleString();
 
-    totalBrands.innerText =
+    document.getElementById("totalBrands").innerText =
         data.total_brands;
 
-    totalSegments.innerText =
+    document.getElementById("totalSegments").innerText =
         data.total_segments;
 
-    totalBodyTypes.innerText =
+    document.getElementById("totalBodyTypes").innerText =
         data.total_body_types;
+}
 
+
+// ============================================
+// INITIALIZE EVERYTHING
+// ============================================
+
+async function initDashboard() {
+
+    console.log("================================");
+    console.log("Vehicle Dashboard started");
+    console.log("Chart.js:", Chart.version);
+    console.log("================================");
+
+    try {
+
+        await loadKPI();
+
+        await renderMakeChart();
+
+        await renderTrendChart();
+
+        await renderSegmentChart();
+
+        await renderBodyChart();
+
+        console.log("All dashboard components loaded.");
+
+    } catch (error) {
+
+        console.error(
+            "DASHBOARD ERROR:",
+            error
+        );
+    }
 }
 
 
 // ============================================
 // START
 // ============================================
-
-async function initDashboard() {
-
-    console.log(
-        "Vehicle dashboard started"
-    );
-
-
-    try {
-
-        await Promise.all([
-
-            loadKPI(),
-
-            renderMakeChart(),
-
-            renderTrendChart(),
-
-            renderSegmentChart(),
-
-            renderBodyChart()
-
-        ]);
-
-
-        console.log(
-            "All charts loaded."
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Dashboard error:",
-            error
-        );
-
-    }
-
-}
-
 
 document.addEventListener(
     "DOMContentLoaded",
