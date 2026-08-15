@@ -134,34 +134,75 @@ function commonTickStyle() {
 function commonTooltip() {
     return {
         enabled: true,
-        mode: "nearest",
-        intersect: true,
-        position: "nearest",
+
         backgroundColor: "#021130",
         titleColor: "#ffffff",
         bodyColor: "#ffffff",
+
         borderColor: "#a78245",
-        borderWidth: 1.5,
-        padding: 12,
+        borderWidth: 2,
+
+        padding: 14,
         cornerRadius: 10,
+
         displayColors: true,
-        animation: {
-            duration: 120,
-            easing: "easeOutCubic"
+
+        titleFont: {
+            family: "'Poppins', sans-serif",
+            size: 14,
+            weight: "600"
         },
+
+        bodyFont: {
+            family: "'Poppins', sans-serif",
+            size: 13,
+            weight: "500"
+        },
+
         callbacks: {
+
+            // Shows the name/category when hovering
+            title: function(context) {
+                return context[0].label;
+            },
+
+            // Shows the actual value
             label: function(context) {
-                const value =
+
+                const chart = context.chart;
+                const dataset = chart.data.datasets[context.datasetIndex];
+
+                const value = Number(
                     context.parsed?.y ??
                     context.parsed ??
-                    context.raw;
+                    context.raw
+                );
 
-                return `${context.label}: ${Number(value).toLocaleString()}`;
+                let result = ` Sales: ${value.toLocaleString()}`;
+
+                // Pie / Doughnut percentage
+                if (
+                    chart.config.type === "pie" ||
+                    chart.config.type === "doughnut"
+                ) {
+
+                    const total = dataset.data.reduce(
+                        (sum, value) => sum + Number(value),
+                        0
+                    );
+
+                    const percentage = total > 0
+                        ? ((value / total) * 100).toFixed(1)
+                        : "0.0";
+
+                    result += ` | Share: ${percentage}%`;
+                }
+
+                return result;
             }
         }
     };
 }
-
 function destroyChart(id) {
     if (chartInstances[id]) {
         chartInstances[id].destroy();
@@ -228,10 +269,10 @@ async function renderMakeChart() {
             responsive: true,
             maintainAspectRatio: false,
             animation: getChartAnimation("make"),
-            interaction: {
-                mode: "index",
-                intersect: false
-            },
+          interaction: {
+    mode: "nearest",
+    intersect: false
+},
             plugins: {
                 legend: {
                     display: true,
@@ -239,12 +280,7 @@ async function renderMakeChart() {
                         color: "#ffffff"
                     }
                 },
-                tooltip: {
-                    ...commonTooltip(),
-                    mode: "nearest",
-                    intersect: true,
-                    position: "nearest"
-                }
+                tooltip: commonTooltip()
             },
             scales: {
                 x: {
@@ -291,6 +327,10 @@ async function renderSegmentChart() {
             responsive: true,
             maintainAspectRatio: false,
             animation: getChartAnimation("segment"),
+            interaction: {
+    mode: "nearest",
+    intersect: true
+},
             plugins: {
                 legend: commonLegendStyle(),
                 tooltip: commonTooltip()
@@ -326,6 +366,10 @@ async function renderBodyChart() {
             maintainAspectRatio: false,
             cutout: "58%",
             animation: getChartAnimation("body"),
+            interaction: {
+    mode: "nearest",
+    intersect: true
+},
             plugins: {
                 legend: commonLegendStyle(),
                 tooltip: commonTooltip()
@@ -376,10 +420,7 @@ async function renderTrendChart() {
                 mode: "nearest",
                 intersect: true
             },
-            hover: {
-                mode: "nearest",
-                intersect: true
-            },
+            
             plugins: {
                 legend: {
                     display: true,
@@ -387,12 +428,7 @@ async function renderTrendChart() {
                         color: "#ffffff"
                     }
                 },
-                tooltip: {
-                    ...commonTooltip(),
-                    mode: "nearest",
-                    intersect: true,
-                    position: "nearest"
-                }
+                tooltip: commonTooltip()
             },
             scales: {
                 x: {
