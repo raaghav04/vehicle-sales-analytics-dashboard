@@ -256,7 +256,6 @@ body{
         font-size:2rem;
     }
 }
-
 .hero-section{
     background:
     linear-gradient(
@@ -334,7 +333,6 @@ body{
     line-height:1.8;
     color:#f0f0f0;
 }
-
 .single-page-grid{
     grid-template-columns: 2fr 1fr;
 }
@@ -357,7 +355,6 @@ body{
         min-height:auto;
     }
 }
-
 .insight-card{
     min-height:220px;
     display:flex;
@@ -402,7 +399,6 @@ body{
         transform:translateY(0);
     }
 }
-
 /* =========================
    PAGE ENTRY ANIMATIONS
 ========================= */
