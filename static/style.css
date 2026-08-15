@@ -16,7 +16,6 @@ body{
     min-height:100vh;
 }
 
-
 /* NAVBAR */
 
 .navbar{
@@ -74,7 +73,6 @@ body{
     width:100%;
 }
 
-
 /* MAIN */
 
 .dashboard{
@@ -83,7 +81,6 @@ body{
     margin:auto;
     padding:30px;
 }
-
 
 /* HEADER */
 
@@ -102,7 +99,6 @@ body{
     color:#c7c7c7;
     font-size:1rem;
 }
-
 
 /* KPI SECTION */
 
@@ -145,7 +141,6 @@ body{
     color:white;
 }
 
-
 /* CHARTS */
 
 .charts-grid{
@@ -182,14 +177,12 @@ body{
     text-align:center;
 }
 
-
 /* CHART QUALITY */
 
 .chart-card canvas{
     width:100% !important;
     height:420px !important;
 }
-
 
 /* INSIGHTS */
 
@@ -227,7 +220,6 @@ body{
     line-height:1.6;
 }
 
-
 /* SCROLLBAR */
 
 ::-webkit-scrollbar{
@@ -242,7 +234,6 @@ body{
     background:#a78245;
     border-radius:20px;
 }
-
 
 /* RESPONSIVE */
 
@@ -265,9 +256,6 @@ body{
         font-size:2rem;
     }
 }
-
-
-/* HERO */
 
 .hero-section{
     background:
@@ -321,9 +309,6 @@ body{
     font-weight:600;
 }
 
-
-/* PROJECT OVERVIEW */
-
 .project-overview{
     margin-top:30px;
 }
@@ -350,9 +335,6 @@ body{
     color:#f0f0f0;
 }
 
-
-/* SINGLE PAGE GRID */
-
 .single-page-grid{
     grid-template-columns: 2fr 1fr;
 }
@@ -376,9 +358,6 @@ body{
     }
 }
 
-
-/* INSIGHT CARD UPDATE */
-
 .insight-card{
     min-height:220px;
     display:flex;
@@ -401,18 +380,12 @@ body{
     box-shadow:0 0 25px rgba(167,130,69,0.25);
 }
 
-
-/* ICON COLORS */
-
 .nav-logo i,
 .chart-card i,
 .hero-content i,
 .overview-card i{
     color:#a78245;
 }
-
-
-/* PAGE FADE */
 
 .dashboard{
     animation: pageFade 0.8s ease;
@@ -429,7 +402,6 @@ body{
         transform:translateY(0);
     }
 }
-
 
 /* =========================
    PAGE ENTRY ANIMATIONS
@@ -469,7 +441,6 @@ body{
     }
 }
 
-
 /* KPI Cards */
 
 .kpi-card{
@@ -494,7 +465,6 @@ body{
         transform:translateY(0);
     }
 }
-
 
 /* Insight Cards */
 
