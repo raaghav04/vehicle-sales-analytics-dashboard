@@ -68,18 +68,18 @@ function getChartAnimation(chartName) {
     }
 
     if (chartName === "segment") {
-        return {
-            duration: 1500,
-            easing: "easeOutQuart"
-        };
-    }
+    return {
+        duration: 800,
+        easing: "easeOutCubic"
+    };
+}
 
-    if (chartName === "body") {
-        return {
-            duration: 1500,
-            easing: "easeOutQuart"
-        };
-    }
+if (chartName === "body") {
+    return {
+        duration: 800,
+        easing: "easeOutCubic"
+    };
+}
 
     if (chartName === "trend") {
         return {
