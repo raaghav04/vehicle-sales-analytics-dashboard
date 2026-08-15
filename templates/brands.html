@@ -1,316 +1,120 @@
-Chart.defaults.color = "#ffffff";
-Chart.defaults.font.family = "'Poppins', sans-serif";
+<!DOCTYPE html>
+<html lang="en">
 
-let makeChartInstance = null;
-let segmentChartInstance = null;
+<head>
 
+    <meta charset="UTF-8">
 
-// ==============================
-// TOOLTIP
-// ==============================
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-function commonTooltip() {
-    return {
-        enabled: true,
+    <title>Brand Analysis | Vehicle Sales Dashboard</title>
 
-        backgroundColor: "#021130",
-        titleColor: "#ffffff",
-        bodyColor: "#ffffff",
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 
-        borderColor: "#a78245",
-        borderWidth: 2,
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
 
-        padding: 14,
-        cornerRadius: 10,
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-        callbacks: {
+</head>
 
-            title: function(context) {
-                return context[0].label;
-            },
+<body>
 
-            label: function(context) {
+<nav class="navbar">
 
-                const value = Number(context.raw || 0);
+    <div class="nav-logo">
 
-                return ` Sales: ${value.toLocaleString()}`;
-            }
-        }
-    };
-}
+        <i class="fas fa-chart-line"></i>
 
+        Vehicle Sales Dashboard
 
-// ==============================
-// LOAD DATA
-// ==============================
+    </div>
 
-async function fetchData(url) {
 
-    const response = await fetch(url, {
-        cache: "no-store"
-    });
+    <div class="nav-links">
 
-    if (!response.ok) {
-        throw new Error(
-            `Failed to load ${url}: ${response.status}`
-        );
-    }
+        <a href="/">Dashboard</a>
 
-    return await response.json();
-}
+        <a href="/sales">Sales</a>
 
+        <a href="/brands">Brands</a>
 
-// ==============================
-// BRAND CHART
-// ==============================
+        <a href="/segments">Segments</a>
 
-async function renderMakeChart() {
+        <a href="/insights">Insights</a>
 
-    const canvas = document.getElementById("makeChart");
+    </div>
 
-    if (!canvas) {
-        console.error("makeChart canvas not found");
-        return;
-    }
+</nav>
 
-    const data = await fetchData("/sales_by_make");
 
-    console.log("Brand data:", data);
+<div class="dashboard">
 
 
-    if (makeChartInstance) {
-        makeChartInstance.destroy();
-    }
+    <!-- HEADER -->
 
+    <header class="header">
 
-    makeChartInstance = new Chart(canvas, {
+        <h1>
+            Brand Analysis
+        </h1>
 
-        type: "bar",
+        <p>
+            Comparison of top vehicle manufacturers based on total sales performance
+        </p>
 
-        data: {
+    </header>
 
-            labels: data.labels,
 
-            datasets: [{
+    <!-- CHARTS -->
 
-                label: "Top 10 Brands by Sales",
+    <section class="charts-grid single-page-grid">
 
-                data: data.values,
 
-                backgroundColor: [
-                    "#3B82F6",
-                    "#10B981",
-                    "#F59E0B",
-                    "#EF4444",
-                    "#8B5CF6",
-                    "#06B6D4",
-                    "#EC4899",
-                    "#84CC16",
-                    "#F97316",
-                    "#a78245"
-                ],
+        <!-- BRAND BAR CHART -->
 
-                borderColor: "#ffffff",
+        <div class="chart-card wide-card">
 
-                borderWidth: 1.5,
+            <h2>
 
-                borderRadius: 10,
+                <i class="fas fa-trophy"></i>
 
-                hoverBackgroundColor: "#f0d7a5"
-            }]
-        },
+                Top 10 Brands by Sales
 
+            </h2>
 
-        options: {
+            <canvas id="makeChart"></canvas>
 
-            responsive: true,
+        </div>
 
-            maintainAspectRatio: false,
 
-            animation: {
-                duration: 1200,
-                easing: "easeOutBounce"
-            },
+        <!-- SEGMENT PIE CHART -->
 
-            interaction: {
-                mode: "nearest",
-                intersect: true
-            },
+        <div class="chart-card">
 
+            <h2>
 
-            plugins: {
+                <i class="fas fa-chart-pie"></i>
 
-                legend: {
-                    display: true,
+                Brand Market Share View
 
-                    labels: {
-                        color: "#ffffff"
-                    }
-                },
+            </h2>
 
-                tooltip: commonTooltip()
-            },
+            <canvas id="segmentChart"></canvas>
 
+        </div>
 
-            scales: {
 
-                x: {
+    </section>
 
-                    ticks: {
-                        color: "#ffffff"
-                    },
 
-                    grid: {
-                        color: "rgba(255,255,255,0.08)"
-                    }
-                },
+</div>
 
-                y: {
 
-                    beginAtZero: true,
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 
-                    ticks: {
-                        color: "#ffffff"
-                    },
+</body>
 
-                    grid: {
-                        color: "rgba(255,255,255,0.08)"
-                    }
-                }
-            }
-        }
-    });
-
-    console.log("Make chart loaded successfully");
-}
-
-
-// ==============================
-// SEGMENT CHART
-// ==============================
-
-async function renderSegmentChart() {
-
-    const canvas =
-        document.getElementById("segmentChart");
-
-    if (!canvas) {
-        console.error("segmentChart canvas not found");
-        return;
-    }
-
-    const data =
-        await fetchData("/sales_by_segment");
-
-    console.log("Segment data:", data);
-
-
-    if (segmentChartInstance) {
-        segmentChartInstance.destroy();
-    }
-
-
-    segmentChartInstance = new Chart(canvas, {
-
-        type: "pie",
-
-        data: {
-
-            labels: data.labels,
-
-            datasets: [{
-
-                data: data.values,
-
-                backgroundColor: [
-                    "#3B82F6",
-                    "#10B981",
-                    "#F59E0B",
-                    "#EF4444",
-                    "#8B5CF6",
-                    "#06B6D4",
-                    "#EC4899",
-                    "#84CC16"
-                ],
-
-                borderColor: "#021130",
-
-                borderWidth: 3,
-
-                hoverOffset: 15
-            }]
-        },
-
-
-        options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            animation: {
-                duration: 800,
-                easing: "easeOutCubic"
-            },
-
-            interaction: {
-                mode: "nearest",
-                intersect: true
-            },
-
-
-            plugins: {
-
-                legend: {
-
-                    position: "bottom",
-
-                    labels: {
-
-                        color: "#ffffff",
-
-                        usePointStyle: true,
-
-                        padding: 18
-                    }
-                },
-
-                tooltip: commonTooltip()
-            }
-        }
-    });
-
-    console.log("Segment chart loaded successfully");
-}
-
-
-// ==============================
-// START
-// ==============================
-
-async function initDashboard() {
-
-    console.log("Dashboard JavaScript started");
-
-    try {
-
-        await renderMakeChart();
-
-        await renderSegmentChart();
-
-        console.log("Dashboard loaded successfully");
-
-    } catch (error) {
-
-        console.error(
-            "Dashboard loading error:",
-            error
-        );
-    }
-}
-
-
-document.addEventListener(
-    "DOMContentLoaded",
-    initDashboard
-);
+</html>
