@@ -1,55 +1,316 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brand Analysis | Vehicle Sales Dashboard</title>
+Chart.defaults.color = "#ffffff";
+Chart.defaults.font.family = "'Poppins', sans-serif";
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
-</head>
-<body>
+let makeChartInstance = null;
+let segmentChartInstance = null;
 
-    <nav class="navbar">
-        <div class="nav-logo">Vehicle Sales Dashboard</div>
-        <div class="nav-links">
-            <a href="/">Dashboard</a>
-            <a href="/sales">Sales</a>
-            <a href="/brands">Brands</a>
-            <a href="/segments">Segments</a>
-            <a href="/insights">Insights</a>
-        </div>
-    </nav>
 
-    <div class="dashboard">
+// ==============================
+// TOOLTIP
+// ==============================
 
-        <header class="header">
-            <h1>Brand Analysis</h1>
-            <p>Comparison of top vehicle manufacturers based on total sales performance</p>
-        </header>
+function commonTooltip() {
+    return {
+        enabled: true,
 
-        <section class="charts-grid single-page-grid">
+        backgroundColor: "#021130",
+        titleColor: "#ffffff",
+        bodyColor: "#ffffff",
 
-            <div class="chart-card wide-card">
-                <h2>Top 10 Brands by Sales</h2>
-                <canvas id="makeChart"></canvas>
-            </div>
+        borderColor: "#a78245",
+        borderWidth: 2,
 
-            <div class="chart-card">
+        padding: 14,
+        cornerRadius: 10,
 
-    <h2>
-        <i class="fas fa-chart-pie"></i>
-        Brand Market Share View
-    </h2>
+        callbacks: {
 
-    <canvas id="segmentChart"></canvas>
+            title: function(context) {
+                return context[0].label;
+            },
 
-</div>
+            label: function(context) {
 
-        </section>
+                const value = Number(context.raw || 0);
 
-    </div>
+                return ` Sales: ${value.toLocaleString()}`;
+            }
+        }
+    };
+}
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
-</html>
+
+// ==============================
+// LOAD DATA
+// ==============================
+
+async function fetchData(url) {
+
+    const response = await fetch(url, {
+        cache: "no-store"
+    });
+
+    if (!response.ok) {
+        throw new Error(
+            `Failed to load ${url}: ${response.status}`
+        );
+    }
+
+    return await response.json();
+}
+
+
+// ==============================
+// BRAND CHART
+// ==============================
+
+async function renderMakeChart() {
+
+    const canvas = document.getElementById("makeChart");
+
+    if (!canvas) {
+        console.error("makeChart canvas not found");
+        return;
+    }
+
+    const data = await fetchData("/sales_by_make");
+
+    console.log("Brand data:", data);
+
+
+    if (makeChartInstance) {
+        makeChartInstance.destroy();
+    }
+
+
+    makeChartInstance = new Chart(canvas, {
+
+        type: "bar",
+
+        data: {
+
+            labels: data.labels,
+
+            datasets: [{
+
+                label: "Top 10 Brands by Sales",
+
+                data: data.values,
+
+                backgroundColor: [
+                    "#3B82F6",
+                    "#10B981",
+                    "#F59E0B",
+                    "#EF4444",
+                    "#8B5CF6",
+                    "#06B6D4",
+                    "#EC4899",
+                    "#84CC16",
+                    "#F97316",
+                    "#a78245"
+                ],
+
+                borderColor: "#ffffff",
+
+                borderWidth: 1.5,
+
+                borderRadius: 10,
+
+                hoverBackgroundColor: "#f0d7a5"
+            }]
+        },
+
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            animation: {
+                duration: 1200,
+                easing: "easeOutBounce"
+            },
+
+            interaction: {
+                mode: "nearest",
+                intersect: true
+            },
+
+
+            plugins: {
+
+                legend: {
+                    display: true,
+
+                    labels: {
+                        color: "#ffffff"
+                    }
+                },
+
+                tooltip: commonTooltip()
+            },
+
+
+            scales: {
+
+                x: {
+
+                    ticks: {
+                        color: "#ffffff"
+                    },
+
+                    grid: {
+                        color: "rgba(255,255,255,0.08)"
+                    }
+                },
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+                        color: "#ffffff"
+                    },
+
+                    grid: {
+                        color: "rgba(255,255,255,0.08)"
+                    }
+                }
+            }
+        }
+    });
+
+    console.log("Make chart loaded successfully");
+}
+
+
+// ==============================
+// SEGMENT CHART
+// ==============================
+
+async function renderSegmentChart() {
+
+    const canvas =
+        document.getElementById("segmentChart");
+
+    if (!canvas) {
+        console.error("segmentChart canvas not found");
+        return;
+    }
+
+    const data =
+        await fetchData("/sales_by_segment");
+
+    console.log("Segment data:", data);
+
+
+    if (segmentChartInstance) {
+        segmentChartInstance.destroy();
+    }
+
+
+    segmentChartInstance = new Chart(canvas, {
+
+        type: "pie",
+
+        data: {
+
+            labels: data.labels,
+
+            datasets: [{
+
+                data: data.values,
+
+                backgroundColor: [
+                    "#3B82F6",
+                    "#10B981",
+                    "#F59E0B",
+                    "#EF4444",
+                    "#8B5CF6",
+                    "#06B6D4",
+                    "#EC4899",
+                    "#84CC16"
+                ],
+
+                borderColor: "#021130",
+
+                borderWidth: 3,
+
+                hoverOffset: 15
+            }]
+        },
+
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            animation: {
+                duration: 800,
+                easing: "easeOutCubic"
+            },
+
+            interaction: {
+                mode: "nearest",
+                intersect: true
+            },
+
+
+            plugins: {
+
+                legend: {
+
+                    position: "bottom",
+
+                    labels: {
+
+                        color: "#ffffff",
+
+                        usePointStyle: true,
+
+                        padding: 18
+                    }
+                },
+
+                tooltip: commonTooltip()
+            }
+        }
+    });
+
+    console.log("Segment chart loaded successfully");
+}
+
+
+// ==============================
+// START
+// ==============================
+
+async function initDashboard() {
+
+    console.log("Dashboard JavaScript started");
+
+    try {
+
+        await renderMakeChart();
+
+        await renderSegmentChart();
+
+        console.log("Dashboard loaded successfully");
+
+    } catch (error) {
+
+        console.error(
+            "Dashboard loading error:",
+            error
+        );
+    }
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    initDashboard
+);
