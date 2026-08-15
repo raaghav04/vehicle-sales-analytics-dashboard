@@ -28,14 +28,14 @@
             <p>Data-driven highlights from 2024 vehicle sales performance</p>
         </header>
 
-        <section class="insights-section" id=\"insightsContainer\">
+        <section class="insights-section" id="insightsContainer">
             <div class="insight-card">
-                <h2>📊 Market Leader</h2>
+                <h2>🏆 Market Leader</h2>
                 <p id="insightBrand">Loading...</p>
             </div>
 
             <div class="insight-card">
-                <h2>🚘 Best-Selling Model</h2>
+                <h2>🚗 Best-Selling Model</h2>
                 <p id="insightModel">Loading...</p>
             </div>
 
@@ -45,17 +45,17 @@
             </div>
 
             <div class="insight-card">
-                <h2>🚙 Dominant Body Type</h2>
+                <h2>🚙 Top Body Type</h2>
                 <p id="insightBody">Loading...</p>
             </div>
 
             <div class="insight-card">
-                <h2>📈 Monthly Growth Rate</h2>
+                <h2>📈 Avg. Month-over-Month Growth</h2>
                 <p id="insightMom">Loading...</p>
             </div>
 
             <div class="insight-card">
-                <h2>🔢 Total Market Volume</h2>
+                <h2>📊 Total Market Sales</h2>
                 <p id="insightTotal">Loading...</p>
             </div>
         </section>
@@ -65,30 +65,26 @@
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script>
         async function loadInsights() {
-            try {
-                const res = await fetch("/insights_data");
-                const d = await res.json();
+            const res = await fetch("/insights_data");
+            const d = await res.json();
 
-                document.getElementById("insightBrand").innerText =
-                    `${d.top_brand} leads the market with ${d.top_brand_sales.toLocaleString()} units sold, capturing ${d.top_brand_share}% of total sales.`;
+            document.getElementById("insightBrand").innerText =
+                `${d.top_brand} leads the market with ${d.top_brand_sales.toLocaleString()} units sold, capturing ${d.top_brand_share}% of total sales.`;
 
-                document.getElementById("insightModel").innerText =
-                    `The ${d.top_model} was the highest-selling model with ${d.top_model_sales.toLocaleString()} total units in 2024.`;
+            document.getElementById("insightModel").innerText =
+                `The ${d.top_model} was the highest-selling model with ${d.top_model_sales.toLocaleString()} total units in 2024.`;
 
-                document.getElementById("insightMonth").innerText =
-                    `${d.best_month} recorded the highest monthly sales at ${d.best_month_sales.toLocaleString()} units.`;
+            document.getElementById("insightMonth").innerText =
+                `${d.best_month} recorded the highest monthly sales at ${d.best_month_sales.toLocaleString()} units.`;
 
-                document.getElementById("insightBody").innerText =
-                    `${d.top_body_type} vehicles dominated the market with ${d.top_body_type_sales.toLocaleString()} units sold across all brands.`;
+            document.getElementById("insightBody").innerText =
+                `${d.top_body_type} vehicles dominated the market with ${d.top_body_type_sales.toLocaleString()} units sold across all brands.`;
 
-                document.getElementById("insightMom").innerText =
-                    `The average month-over-month growth across all models in 2024 was ${d.avg_mom_growth > 0 ? "+" : ""}${d.avg_mom_growth}%.`;
+            document.getElementById("insightMom").innerText =
+                `The average month-over-month growth across all models in 2024 was ${d.avg_mom_growth > 0 ? "+" : ""}${d.avg_mom_growth}%.`;
 
-                document.getElementById("insightTotal").innerText =
-                    `A total of ${d.total_sales.toLocaleString()} vehicles were sold across all brands, models, and segments in 2024.`;
-            } catch(err) {
-                console.error("Error loading insights cards:", err);
-            }
+            document.getElementById("insightTotal").innerText =
+                `A total of ${d.total_sales.toLocaleString()} vehicles were sold across all brands, models, and segments in 2024.`;
         }
 
         window.addEventListener("load", loadInsights);
